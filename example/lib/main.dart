@@ -73,38 +73,37 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   FlutterTelRecord.requestManngeExternalStorage()
                       .then((value1) {
-                    if (value1) {
-                      [Permission.storage, Permission.phone]
-                          .request()
-                          .then((value) {
-                        if (value[Permission.storage] !=
-                                PermissionStatus.granted ||
-                            value[Permission.phone] !=
-                                PermissionStatus.granted) {
-                          return;
-                        }
-                        DateTime now = DateTime.now();
-                        DateTime start = DateTime(now.year, now.month, now.day)
-                            .subtract(const Duration(days: 3));
-                        DateTime end = DateTime(now.year, now.month, now.day)
-                            .add(const Duration(microseconds: 86399999999));
-                        FlutterTelRecord.getRecordFiles(
-                          startTime: start.millisecondsSinceEpoch,
-                          endTime: end.millisecondsSinceEpoch,
-                        ).then((value) {
-                          print(value);
-                        });
-                        // FlutterTelRecord.dial(
-                        //   phone: '13280237838',
-                        //   record: true,
-                        //   ignoreCheck: false,
-                        // ).listen((event) {
-                        //   print(event);
-                        // }, onError: (err, stack) {
-                        //   print(err);
-                        // });
+                    [Permission.storage, Permission.phone]
+                        .request()
+                        .then((value) {
+                      if (value[Permission.phone] != PermissionStatus.granted) {
+                        return;
+                      }
+                      if (value[Permission.storage] !=
+                              PermissionStatus.restricted &&
+                          value[Permission.storage] !=
+                              PermissionStatus.granted) {}
+                      // DateTime now = DateTime.now();
+                      // DateTime start = DateTime(now.year, now.month, now.day)
+                      //     .subtract(const Duration(days: 3));
+                      // DateTime end = DateTime(now.year, now.month, now.day)
+                      //     .add(const Duration(microseconds: 86399999999));
+                      // FlutterTelRecord.getRecordFiles(
+                      //   startTime: start.millisecondsSinceEpoch,
+                      //   endTime: end.millisecondsSinceEpoch,
+                      // ).then((value) {
+                      //   print(value);
+                      // });
+                      FlutterTelRecord.dial(
+                        phone: '13280237838',
+                        record: true,
+                        ignoreCheck: false,
+                      ).listen((event) {
+                        print(event);
+                      }, onError: (err, stack) {
+                        print(err);
                       });
-                    }
+                    });
                   });
                 },
                 child: const Text('拨号13280237838'),

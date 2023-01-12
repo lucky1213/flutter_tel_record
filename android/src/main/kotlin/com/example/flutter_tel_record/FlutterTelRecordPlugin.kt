@@ -1,6 +1,7 @@
 package com.example.flutter_tel_record
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -157,20 +158,35 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun hasPermission(): Boolean {
-    return !((ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
-            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
-      context,
-      Manifest.permission.READ_CALL_LOG
-    )
-            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
-      context,
-      Manifest.permission.READ_PHONE_STATE
-    )
-            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
-      context,
-      Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-            != PackageManager.PERMISSION_GRANTED))
+    val storage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      Permission.MANAGE_EXTERNAL_STORAGE
+    } else {
+      Permission.READ_EXTERNAL_STORAGE
+    }
+    return XXPermissions.isGranted(context, Permission.MANAGE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE , Permission.READ_CALL_LOG, Permission.CALL_PHONE)
+//    val hasStorge = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//      (ActivityCompat.checkSelfPermission(
+//        context,
+//        Manifest.permission.MANAGE_EXTERNAL_STORAGE
+//      )
+//              != PackageManager.PERMISSION_GRANTED)
+//    } else {
+//      (ActivityCompat.checkSelfPermission(
+//        context,
+//        Manifest.permission.READ_EXTERNAL_STORAGE
+//      )
+//              != PackageManager.PERMISSION_GRANTED)
+//    }
+//    return !((ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
+//            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
+//      context,
+//      Manifest.permission.READ_CALL_LOG
+//    )
+//            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
+//      context,
+//      Manifest.permission.READ_PHONE_STATE
+//    )
+//            != PackageManager.PERMISSION_GRANTED) || !hasStorge)
   }
 
 
@@ -182,6 +198,25 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     context.startActivity(intent)
     return true
   }
+
+//  private fun getSIMLength() {
+//    val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+//    if (XXPermissions.isGranted(context, Permission.READ_PHONE_STATE)) {
+//      if (ActivityCompat.checkSelfPermission(
+//          context,
+//          Manifest.permission.READ_PHONE_STATE
+//        ) != PackageManager.PERMISSION_GRANTED
+//      ) {
+//        val handles = tm.callCapablePhoneAccounts
+//        if (handles != null && handles.size > 1 && simIndex >= 0) {
+//          simIndex %= handles.size
+//          intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[simIndex])
+//        }
+//      }
+//
+//    }
+//
+//  }
 
   private fun getDialIntent(phone: String, simIndex: Int): Intent? {
     var simIndex = simIndex
