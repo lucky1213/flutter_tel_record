@@ -190,6 +190,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
 
+  @SuppressLint("MissingPermission")
   private fun dial(intent: Intent): Boolean {
     val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
     if (tm.isInCall) {
@@ -218,6 +219,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 //
 //  }
 
+  @SuppressLint("MissingPermission")
   private fun getDialIntent(phone: String, simIndex: Int): Intent? {
     var simIndex = simIndex
     val intent = Intent(Intent.ACTION_CALL)
@@ -225,13 +227,11 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     val data: Uri = Uri.parse("tel:$phone")
     intent.data = data
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-        val handles = tm.callCapablePhoneAccounts
-        if (handles != null && handles.size > 1 && simIndex >= 0) {
-          simIndex %= handles.size
-          intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[simIndex])
-        }
+      val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+      val handles = tm.callCapablePhoneAccounts
+      if (handles != null && handles.size > 1 && simIndex >= 0) {
+        simIndex %= handles.size
+        intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[simIndex])
       }
     } catch (e: Exception) {
       e.printStackTrace()
