@@ -1,0 +1,8 @@
+rootProject.name = 'flutter_tel_record'
+
+dependencyResolutionManagement {
+    repositories {
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url 'https://jitpack.io' }
+    }
+}
