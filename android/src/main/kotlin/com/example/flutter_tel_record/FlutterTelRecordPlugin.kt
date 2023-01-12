@@ -219,7 +219,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 //
 //  }
 
-  @SuppressLint("MissingPermission")
+  @SuppressLint("MissingPermission", "NewApi")
   private fun getDialIntent(phone: String, simIndex: Int): Intent? {
     var simIndex = simIndex
     val intent = Intent(Intent.ACTION_CALL)
