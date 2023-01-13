@@ -224,7 +224,7 @@ object  RecordFileUtil {
         return list
     }
 
-    fun getFileSleep(context: Context, current: Int, maxCount: Int = 5): File? {
+    fun getFileSleep(context: Context, current: Int, maxCount: Int = 9): File? {
         var file:File? = null
         if (current < maxCount) {
             file = getFile(context)
