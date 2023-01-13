@@ -224,20 +224,20 @@ object  RecordFileUtil {
         return list
     }
 
-    fun getFileSleep(context: Context, current: Int, maxCount: Int = 9): File? {
+    fun getFileSleep(context: Context, current: Int, maxCount: Int = 9, duration: Long): File? {
         var file:File? = null
         if (current < maxCount) {
-            file = getFile(context)
+            file = getFile(context, duration)
             if (file == null) {
                 Thread.sleep(1000)
-                return getFileSleep(context, current +1, maxCount)
+                return getFileSleep(context, current +1, maxCount, duration)
             }
         }
         return file
     }
 
     //寻找文件
-    fun getFile(context: Context): File? {
+    private fun getFile(context: Context, duration: Long): File? {
         try {
             val time: Long = Calendar.getInstance().timeInMillis
             var dir: File
@@ -249,7 +249,7 @@ object  RecordFileUtil {
                 recordDir = getSystemRecord()
                 if (!TextUtils.isEmpty(recordDir)) {
                     dir = File(recordDir!!)
-                    val file: File? = getRecordFile(time, dir)
+                    val file: File? = getRecordFile(time, dir, duration)
                     if (file != null) {
                         file.parent?.let { saveRecordDir(it, context) }
                         return file
@@ -259,7 +259,7 @@ object  RecordFileUtil {
                 val recordFiles = getRecordFiles()
                 for (i in 0 until recordFiles.size) {
                     dir = File(recordFiles[i])
-                    val file: File? = getRecordFile(time, dir)
+                    val file: File? = getRecordFile(time, dir, duration)
                     if (file != null) {
                         file.parent?.let { saveRecordDir(it, context) }
                         return file
@@ -267,7 +267,7 @@ object  RecordFileUtil {
                 }
             } else {
                 //直接使用已存储文件夹下搜索
-                val file: File? = getRecordFile(time, File(recordDir!!))
+                val file: File? = getRecordFile(time, File(recordDir!!), duration)
                 if (file != null) {
                     file.parent?.let { saveRecordDir(it, context) }
                     return file
@@ -358,7 +358,7 @@ object  RecordFileUtil {
     }
 
 
-    private fun getRecordFile(time: Long, dir: File): File? {
+    private fun getRecordFile(time: Long, dir: File, duration: Long): File? {
         if (dir.isDirectory && isNotRecordAppDir(dir)) {
             try {
                 val files: Array<File> = dir.listFiles() as Array<File>
@@ -366,8 +366,14 @@ object  RecordFileUtil {
                     for (i in files.indices) {
                         val file: File = files[i]
                         //20秒之内生成的文件 默认为当前的录音文件(TODO 这里如果需要更准确可以判断是否是录音,录音时长校对)
-                        if (matchFileNameIsRecord(file.name) && file.lastModified() - time > -20 * 1000 && file.length() > 0 && file.isFile) {
-                            return file
+                        if (matchFileNameIsRecord(file.name) && file.length() > 0 && file.isFile) {
+                            if (file.lastModified() - time > -20 * 1000) {
+                                 return file
+                            } else {
+                                if (file.lastModified() - time > -(20 + duration) * 1000) {
+                                    return file
+                                }
+                            }
                         }
                     }
                 }

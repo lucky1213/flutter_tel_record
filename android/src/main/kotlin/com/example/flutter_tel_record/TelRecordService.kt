@@ -89,8 +89,9 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
                     thread {
                         val callLog = diffCallLog()
                         var newFile: File? = null
-                        if ((callLog?.duration ?: 0) > 0 && record && uuid != null ) {
-                            val file = RecordFileUtil.getFileSleep(context, 0)
+                        val duration = callLog?.duration ?: 0L
+                        if (duration > 0 && record && uuid != null ) {
+                            val file = RecordFileUtil.getFileSleep(context, 0, 9, duration)
                             if (file != null) {
                                 val prefix: String = RecordFileUtil.getExtensionName(file.name)
                                 val targetDirectory = File(getRecordDirectory(uuid))
@@ -116,7 +117,7 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
                                 "phoneNumber" to phoneNumber,
                                 "file" to newFile?.path,
                                 "date" to callLog?.date,
-                                "duration" to callLog?.duration,
+                                "duration" to duration,
                             ))
                             time = null
                             uuid = null
