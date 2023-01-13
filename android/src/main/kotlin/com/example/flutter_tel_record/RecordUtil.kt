@@ -32,8 +32,8 @@ object RecordUtil {
             } else if (ManufacturerUtil.isOppo()) {
                 key = Settings.Global.getInt(context.contentResolver, "oppo_all_call_audio_record")
             } else if (ManufacturerUtil.isVivo()) {
-                // key = Settings.Global.getInt(context.contentResolver, "call_record_state_global")
-                throw Exception("10003")
+                key = Settings.Global.getInt(context.contentResolver, "call_record_state_global")
+
             } else if (ManufacturerUtil.isXiaomi()) {
                 key = Settings.System.getInt(context.contentResolver, "button_auto_record_call")
             } else {
@@ -42,6 +42,9 @@ object RecordUtil {
             Log.e("RecordUtil", "key:$key");
             return key != 0;
         } catch (e: Settings.SettingNotFoundException) {
+            if (ManufacturerUtil.isVivo()) {
+                throw Exception("10003")
+            }
             return false
         } catch (e: Exception) {
             throw Exception("10003")
