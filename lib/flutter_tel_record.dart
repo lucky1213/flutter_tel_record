@@ -7,7 +7,6 @@
 
 import 'package:flutter/foundation.dart';
 
-import 'flutter_tel_record_error.dart';
 import 'flutter_tel_record_platform_interface.dart';
 
 export 'flutter_tel_record_error.dart';
@@ -34,17 +33,6 @@ class FlutterTelRecord {
         .requestRecordPermission()
         .then((value) {
       return value;
-    }).catchError((err, s) {
-      if (err is FlutterTelRecordError) {
-        if (err.exception ==
-            FlutterTelRecordException.autoRecordPermissionDenied) {
-          return false;
-        } else if (err.exception ==
-            FlutterTelRecordException.unsupportedDevice) {
-          return true;
-        }
-      }
-      return false;
     });
   }
 

@@ -41,9 +41,6 @@ object RecordUtil {
             Log.e("RecordUtil", "key:$key");
             return key != 0;
         } catch (e: Settings.SettingNotFoundException) {
-            if (ManufacturerUtil.isVivo()) {
-                throw Exception("10003")
-            }
             return false
         } catch (e: Exception) {
             throw Exception("10003")
