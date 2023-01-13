@@ -32,7 +32,8 @@ object RecordUtil {
             } else if (ManufacturerUtil.isOppo()) {
                 key = Settings.Global.getInt(context.contentResolver, "oppo_all_call_audio_record")
             } else if (ManufacturerUtil.isVivo()) {
-                key = Settings.Global.getInt(context.contentResolver, "call_record_state_global")
+                // key = Settings.Global.getInt(context.contentResolver, "call_record_state_global")
+                throw Exception("10003")
             } else if (ManufacturerUtil.isXiaomi()) {
                 key = Settings.System.getInt(context.contentResolver, "button_auto_record_call")
             } else {
