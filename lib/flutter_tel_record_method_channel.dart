@@ -107,6 +107,13 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
   }
 
   @override
+  Future<int> getAudioDuration(String path) {
+    return methodChannel.invokeMethod<int>('getAudioDuration', {
+      'path': path,
+    });
+  }
+
+  @override
   Stream<Map<String, dynamic>> dial({
     @required String phone,
     String uuid,

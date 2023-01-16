@@ -67,4 +67,8 @@ abstract class FlutterTelRecordPlatform extends PlatformInterface {
   Future<String> getRecordCacheDir() {
     throw UnimplementedError('getRecordCacheDir() has not been implemented.');
   }
+
+  Future<int> getAudioDuration(String path) {
+    throw UnimplementedError('getAudioDuration() has not been implemented.');
+  }
 }

@@ -65,4 +65,8 @@ class FlutterTelRecord {
   static Future<String> getRecordCacheDir() {
     return FlutterTelRecordPlatform.instance.getRecordCacheDir();
   }
+
+  static Future<int> getAudioDuration(String path) {
+    return FlutterTelRecordPlatform.instance.getAudioDuration(path);
+  }
 }

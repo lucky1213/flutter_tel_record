@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -124,6 +125,14 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       "getRecordCacheDir" -> {
         val recordDir = RecordFileUtil.getRecordCacheDir(context)
         result.success(recordDir)
+      }
+      "getAudioDuration" -> {
+          val path = call.argument<String>("path")!!
+          val mediaMetadataRetriever = MediaMetadataRetriever()
+          mediaMetadataRetriever.setDataSource(path)
+          val durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+          val duration = durationStr?.toInt()?:0
+          result.success(duration)
       }
       else -> {
         result.notImplemented()
