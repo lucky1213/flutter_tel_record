@@ -153,7 +153,7 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
     private fun getRecordDirectory(subDirectory: String? = null): String {
         val sub = subDirectory ?: ""
 
-        val outputDir = File(context.cacheDir, sub)
+        val outputDir = File(context.externalCacheDir, sub)
         if (!outputDir.exists()) {
             outputDir.mkdir()
         }
