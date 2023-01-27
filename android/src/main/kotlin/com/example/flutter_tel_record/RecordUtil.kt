@@ -24,10 +24,8 @@ object RecordUtil {
             var key = 0
             if (ManufacturerUtil.isHuawei()) {
                 key = Settings.Secure.getInt(context.contentResolver, "enable_record_auto_key")
-                if (ManufacturerUtil.isHarmonyOs()) {
-
-                } else {
-
+                if (key == 1) {
+                    key = Settings.Secure.getInt(context.contentResolver, "enable_all_numbers_key")
                 }
             } else if (ManufacturerUtil.isOppo()) {
                 key = Settings.Global.getInt(context.contentResolver, "oppo_all_call_audio_record")
@@ -38,7 +36,7 @@ object RecordUtil {
             } else {
                 throw Exception("10003")
             }
-            Log.e("RecordUtil", "key:$key");
+            Log.e("RecordUtil", "key:$key")
             return key != 0;
         } catch (e: Settings.SettingNotFoundException) {
             return false
