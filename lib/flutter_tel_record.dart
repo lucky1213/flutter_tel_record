@@ -38,6 +38,7 @@ class FlutterTelRecord {
 
   static Stream<Map<String, dynamic>> dial({
     @required String phone,
+    int simIndex = 0,
     String uuid,
     bool record = false,
     bool ignoreCheck = true,
@@ -45,6 +46,7 @@ class FlutterTelRecord {
   }) {
     return FlutterTelRecordPlatform.instance.dial(
       phone: phone,
+      simIndex: simIndex,
       uuid: uuid,
       record: record,
       ignoreCheck: ignoreCheck,

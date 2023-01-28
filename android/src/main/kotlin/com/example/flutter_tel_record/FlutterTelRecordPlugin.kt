@@ -168,7 +168,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 //    } else {
 //      Permission.READ_EXTERNAL_STORAGE
 //    }
-    return XXPermissions.isGranted(context, Permission.MANAGE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE , Permission.READ_CALL_LOG, Permission.CALL_PHONE, Permission.READ_PHONE_NUMBERS)
+    return XXPermissions.isGranted(context, Permission.MANAGE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE , Permission.READ_CALL_LOG, Permission.CALL_PHONE)
   }
 
 

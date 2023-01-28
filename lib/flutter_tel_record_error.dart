@@ -13,6 +13,9 @@ enum FlutterTelRecordException {
   /// The device is not supported.
   unsupportedDevice,
 
+  /// sim Invalid
+  simInvalid,
+
   /// unknown error.
   unknown
 }
@@ -28,6 +31,8 @@ extension FlutterTelRecordExceptionExtension on FlutterTelRecordException {
         return '10002';
       case FlutterTelRecordException.unsupportedDevice:
         return '10003';
+      case FlutterTelRecordException.simInvalid:
+        return '10004';
       default:
         return '';
     }
@@ -46,6 +51,8 @@ extension FlutterTelRecordExceptionExtension on FlutterTelRecordException {
         return FlutterTelRecordException.autoRecordPermissionDenied;
       case '10003':
         return FlutterTelRecordException.unsupportedDevice;
+      case '10004':
+        return FlutterTelRecordException.simInvalid;
       default:
         return FlutterTelRecordException.unknown;
     }

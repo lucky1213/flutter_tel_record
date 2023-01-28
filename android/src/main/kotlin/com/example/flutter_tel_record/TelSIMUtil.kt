@@ -134,7 +134,7 @@ object TelSIMUtil {
         val subscriptionManager = context.getSystemService(
             Context.TELEPHONY_SUBSCRIPTION_SERVICE
         ) as SubscriptionManager
-        
+
         try {
             val telephonyClass = SubscriptionManager::class.java
             val getSimState = telephonyClass.getMethod("getSubId", Int::class.java)

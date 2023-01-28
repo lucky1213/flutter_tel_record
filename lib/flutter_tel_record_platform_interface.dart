@@ -52,6 +52,7 @@ abstract class FlutterTelRecordPlatform extends PlatformInterface {
 
   Stream<Map<String, dynamic>> dial({
     @required String phone,
+    int simIndex = 0,
     String uuid,
     bool record = false,
     bool ignoreCheck = true,
