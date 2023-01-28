@@ -1,23 +1,16 @@
 package com.example.flutter_tel_record
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.Settings
 import android.telecom.TelecomManager
-import android.text.TextUtils
 import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat
-import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -27,7 +20,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import java.io.File
 
 
 /** FlutterTelRecordPlugin */
@@ -42,9 +34,6 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private  lateinit var  telRecordManager: TelRecordService
 
   private var activity: Activity? = null
-
-  var uuid: String? = null
-  var phoneNumber: String? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tel_record")
@@ -108,7 +97,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
             return
           }
         }
-        if (dial(getDialIntent(phone, simIndex)!!)) {
+        if (dial(getDialIntent(phone, simIndex))) {
           val uuid: String? = call.argument("uuid")
           telRecordManager.setPhoneNumber(uuid, phone, filename, record)
           result.success(phone)
@@ -133,6 +122,13 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           val durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
           val duration = durationStr?.toInt()?:0
           result.success(duration)
+      }
+      "getSIMInfos" -> {
+        result.success(TelSIMUtil.getSIMInfos(context).map { hashMapOf<String, Any?>(
+          "phoneNumber" to it.phoneNumber,
+          "networkName" to it.networkName,
+          "operateName" to it.operateName,
+        ) })
       }
       else -> {
         result.notImplemented()
@@ -167,35 +163,12 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun hasPermission(): Boolean {
-    val storage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      Permission.MANAGE_EXTERNAL_STORAGE
-    } else {
-      Permission.READ_EXTERNAL_STORAGE
-    }
-    return XXPermissions.isGranted(context, Permission.MANAGE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE , Permission.READ_CALL_LOG, Permission.CALL_PHONE)
-//    val hasStorge = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//      (ActivityCompat.checkSelfPermission(
-//        context,
-//        Manifest.permission.MANAGE_EXTERNAL_STORAGE
-//      )
-//              != PackageManager.PERMISSION_GRANTED)
+//    val storage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//      Permission.MANAGE_EXTERNAL_STORAGE
 //    } else {
-//      (ActivityCompat.checkSelfPermission(
-//        context,
-//        Manifest.permission.READ_EXTERNAL_STORAGE
-//      )
-//              != PackageManager.PERMISSION_GRANTED)
+//      Permission.READ_EXTERNAL_STORAGE
 //    }
-//    return !((ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE)
-//            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
-//      context,
-//      Manifest.permission.READ_CALL_LOG
-//    )
-//            != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(
-//      context,
-//      Manifest.permission.READ_PHONE_STATE
-//    )
-//            != PackageManager.PERMISSION_GRANTED) || !hasStorge)
+    return XXPermissions.isGranted(context, Permission.MANAGE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE , Permission.READ_CALL_LOG, Permission.CALL_PHONE, Permission.READ_PHONE_NUMBERS)
   }
 
 
@@ -209,28 +182,20 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     return true
   }
 
+  @SuppressLint("MissingPermission")
 //  private fun getSIMLength() {
 //    val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-//    if (XXPermissions.isGranted(context, Permission.READ_PHONE_STATE)) {
-//      if (ActivityCompat.checkSelfPermission(
-//          context,
-//          Manifest.permission.READ_PHONE_STATE
-//        ) != PackageManager.PERMISSION_GRANTED
-//      ) {
-//        val handles = tm.callCapablePhoneAccounts
-//        if (handles != null && handles.size > 1 && simIndex >= 0) {
-//          simIndex %= handles.size
-//          intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[simIndex])
-//        }
-//      }
+//    val handles = tm.callCapablePhoneAccounts
+//    val line1Number = tm.getLine1Number()
+//    Log.e("default number",line1Number)
 //
-//    }
-//
+//    val mSubscriptionManager =
+//      this.getSystemService(TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+//    val simNumberCard = mSubscriptionManager.activeSubscriptionInfoCount //获取当前sim卡数量
+//    Log.i("simNumberCard", simNumberCard.toString())
 //  }
 
-  @SuppressLint("MissingPermission", "NewApi")
-  private fun getDialIntent(phone: String, simIndex: Int): Intent? {
-    var simIndex = simIndex
+  private fun getDialIntent(phone: String, simIndex: Int): Intent {
     val intent = Intent(Intent.ACTION_CALL)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     val data: Uri = Uri.parse("tel:$phone")
@@ -238,9 +203,9 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     try {
       val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
       val handles = tm.callCapablePhoneAccounts
-      if (handles != null && handles.size > 1 && simIndex >= 0) {
-        simIndex %= handles.size
-        intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[simIndex])
+      if (handles.size > 1 && simIndex >= 0) {
+        val index = simIndex % handles.size
+        intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handles[index])
       }
     } catch (e: Exception) {
       e.printStackTrace()

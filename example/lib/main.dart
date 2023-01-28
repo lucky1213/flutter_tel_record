@@ -73,9 +73,10 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   FlutterTelRecord.requestManngeExternalStorage()
                       .then((value1) {
-                    [Permission.storage, Permission.phone]
-                        .request()
-                        .then((value) {
+                    [
+                      Permission.storage,
+                      Permission.phone,
+                    ].request().then((value) {
                       if (value[Permission.phone] != PermissionStatus.granted) {
                         return;
                       }
@@ -94,14 +95,17 @@ class _MyAppState extends State<MyApp> {
                       // ).then((value) {
                       //   print(value);
                       // });
-                      FlutterTelRecord.dial(
-                        phone: '13280237838',
-                        record: true,
-                        ignoreCheck: false,
-                      ).listen((event) {
-                        print(event);
-                      }, onError: (err, stack) {
-                        print(err);
+                      // FlutterTelRecord.dial(
+                      //   phone: '13280237838',
+                      //   record: true,
+                      //   ignoreCheck: false,
+                      // ).listen((event) {
+                      //   print(event);
+                      // }, onError: (err, stack) {
+                      //   print(err);
+                      // });
+                      FlutterTelRecord.getSIMInfos().then((value) {
+                        print(value);
                       });
                     });
                   });

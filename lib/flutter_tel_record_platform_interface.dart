@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_tel_record_method_channel.dart';
+import 'sim_info_model.dart';
+
+export 'sim_info_model.dart';
 
 abstract class FlutterTelRecordPlatform extends PlatformInterface {
   /// Constructs a FlutterTelRecordPlatform.
@@ -69,6 +72,10 @@ abstract class FlutterTelRecordPlatform extends PlatformInterface {
   }
 
   Future<int> getAudioDuration(String path) {
+    throw UnimplementedError('getAudioDuration() has not been implemented.');
+  }
+
+  Future<List<SIMInfoModel>> getSIMInfos() {
     throw UnimplementedError('getAudioDuration() has not been implemented.');
   }
 }

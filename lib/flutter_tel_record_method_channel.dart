@@ -116,6 +116,7 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
   @override
   Stream<Map<String, dynamic>> dial({
     @required String phone,
+    int simIndex = 0,
     String uuid,
     String fileName,
     bool record = false,
@@ -146,6 +147,7 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
     return methodChannel
         .invokeMethod<String>('dial', {
           'phone': phone,
+          'simIndex': simIndex,
           'uuid': id,
           'record': record,
           'ignoreCheck': ignoreCheck,
@@ -170,5 +172,18 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
             return Stream.error(error);
           }
         });
+  }
+
+  @override
+  Future<List<SIMInfoModel>> getSIMInfos() async {
+    final result =
+        await methodChannel.invokeMethod<List<dynamic>>('getSIMInfos');
+
+    return result.map((e) {
+      if (e is Map<String, dynamic>) {
+        return SIMInfoModel.fromJson(e);
+      }
+      return null;
+    }).toList();
   }
 }

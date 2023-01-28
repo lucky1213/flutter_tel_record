@@ -69,4 +69,8 @@ class FlutterTelRecord {
   static Future<int> getAudioDuration(String path) {
     return FlutterTelRecordPlatform.instance.getAudioDuration(path);
   }
+
+  static Future<List<SIMInfoModel>> getSIMInfos() {
+    return FlutterTelRecordPlatform.instance.getSIMInfos();
+  }
 }
