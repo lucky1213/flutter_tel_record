@@ -25,7 +25,11 @@ object RecordUtil {
             if (ManufacturerUtil.isHuawei()) {
                 key = Settings.Secure.getInt(context.contentResolver, "enable_record_auto_key")
                 if (key == 1) {
-                    key = Settings.Secure.getInt(context.contentResolver, "enable_all_numbers_key")
+                    key = try {
+                        Settings.Secure.getInt(context.contentResolver, "enable_all_numbers_key")
+                    } catch (e: Settings.SettingNotFoundException) {
+                        0
+                    }
                 }
             } else if (ManufacturerUtil.isOppo()) {
                 key = Settings.Global.getInt(context.contentResolver, "oppo_all_call_audio_record")
@@ -33,6 +37,18 @@ object RecordUtil {
                 key = Settings.Global.getInt(context.contentResolver, "call_record_state_global")
             } else if (ManufacturerUtil.isXiaomi()) {
                 key = Settings.System.getInt(context.contentResolver, "button_auto_record_call")
+                if (key == 1) {
+                    // 小米 radio_record_scenario 全部0，指定是1，key取反
+                    key = try {
+                        if (Settings.System.getInt(context.contentResolver, "radio_record_scenario") == 0){
+                            1
+                        } else {
+                            0
+                        }
+                    } catch (e: Settings.SettingNotFoundException) {
+                        0
+                    }
+                }
             } else {
                 throw Exception("10003")
             }
