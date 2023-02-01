@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.telecom.TelecomManager
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat.startActivityForResult
+import com.blankj.utilcode.util.LogUtils
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -199,6 +200,7 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     val intent = Intent(Intent.ACTION_CALL)
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     val data: Uri = Uri.parse("tel:$phone")
+    LogUtils.e(phone, simIndex)
     intent.data = data
     try {
       val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
