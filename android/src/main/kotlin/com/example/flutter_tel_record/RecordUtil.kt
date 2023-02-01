@@ -46,7 +46,7 @@ object RecordUtil {
                             0
                         }
                     } catch (e: Settings.SettingNotFoundException) {
-                        0
+                        1
                     }
                 }
             } else {
