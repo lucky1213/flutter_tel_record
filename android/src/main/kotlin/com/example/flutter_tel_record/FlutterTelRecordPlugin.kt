@@ -21,6 +21,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.util.*
 
 
 /** FlutterTelRecordPlugin */
@@ -31,16 +32,15 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
   private lateinit var context : Context
-
-  private  lateinit var  telRecordManager: TelRecordService
+  private lateinit var binding: FlutterPlugin.FlutterPluginBinding
 
   private var activity: Activity? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    binding = flutterPluginBinding
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tel_record")
     channel.setMethodCallHandler(this)
     context = flutterPluginBinding.applicationContext
-    telRecordManager = TelRecordService(flutterPluginBinding)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -100,8 +100,9 @@ class FlutterTelRecordPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         }
         if (dial(getDialIntent(phone, simIndex))) {
           val uuid: String? = call.argument("uuid")
+          val telRecordManager = TelRecordService(binding)
           telRecordManager.setPhoneNumber(uuid, phone, filename, record)
-          result.success(phone)
+          result.success(telRecordManager.eventId)
         } else {
           result.error("10001", "通话中", null)
         }

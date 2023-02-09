@@ -1,9 +1,7 @@
 package com.example.flutter_tel_record
 
 //import android.telephony.TelephonyCallback
-import android.R.attr.src
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.CallLog
@@ -14,17 +12,12 @@ import com.blankj.utilcode.util.LogUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import java.io.File
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
 
 
 class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChannel.StreamHandler {
-    private var mainThreadExecutor: MainThreadExecutor = MainThreadExecutor()
 
     private var telephonyManager: TelephonyManager? = null
     // private var telephonyCallback: TelephonyCallback? = null
@@ -32,6 +25,8 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
     private  var context : Context
     private  var eventChannel: EventChannel
     private var eventSink: EventChannel.EventSink? = null
+
+    val eventId: String = UUID.randomUUID().toString()
 
     private var uuid: String? = null
     private var phoneNumber: String? = null
@@ -42,7 +37,7 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
     init {
         context = binding.applicationContext
         eventChannel = EventChannel(binding.binaryMessenger,
-            "flutter_tel_record/listener"
+            "flutter_tel_record/listener_$eventId"
         )
         eventChannel.setStreamHandler(this)
         telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
@@ -69,7 +64,15 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
     }
 
     override fun onCancel(arguments: Any?) {
-        eventSink = null
+        dispose()
+    }
+
+    private fun dispose() {
+        if (eventSink != null) {
+            eventSink!!.endOfStream()
+            eventSink = null
+        }
+        eventChannel.setStreamHandler(null)
     }
 
     fun setPhoneNumber(uuid: String?, phoneNumber: String?, filename: String = "", record: Boolean = false) {
@@ -91,7 +94,12 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
                         var newFile: File? = null
                         val duration = callLog?.duration ?: 0L
                         if (duration > 0 && record && uuid != null ) {
-                            val file = RecordFileUtil.getFileSleep(context, 0, 9, duration)
+                            val regex = if (callLog?.name?.isEmpty() != false) {
+                                callLog!!.number
+                            } else {
+                                callLog.name!!
+                            }
+                            val file = RecordFileUtil.getFileSleep(context, 0, 9, duration, regex)
                             if (file != null) {
                                 val prefix: String = RecordFileUtil.getExtensionName(file.name)
                                 val targetDirectory = File(getRecordDirectory(uuid))
@@ -164,7 +172,7 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
         val callLog = getCallLog()
         if (callLog != null) {
             if (callLog.dateLong - time!! > -5 * 1000) {
-                LogUtils.e("通话时长: ${callLog.duration}", "号码：${callLog.number}", "时间：${callLog.date}")
+                LogUtils.e("通话时长: ${callLog.duration}", "号码：${callLog.number}", "联系人：${callLog.name}", "时间：${callLog.date}")
                 return callLog
             }
         }

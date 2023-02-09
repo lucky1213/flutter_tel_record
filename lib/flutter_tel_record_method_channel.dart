@@ -13,8 +13,6 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_tel_record');
-  @visibleForTesting
-  final eventChannel = const EventChannel('flutter_tel_record/listener');
 
   // MethodChannelFlutterTelRecord() {
 
@@ -126,24 +124,7 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
     if (record && id == null) {
       id = Uuid().v4();
     }
-    final stream = eventChannel
-        .receiveBroadcastStream()
-        .asBroadcastStream()
-        .flatMap((value) {
-      return Stream.value(Map<String, dynamic>.from(value));
-    }).onErrorResume((error) {
-      if (error is PlatformException) {
-        return Stream.error(FlutterTelRecordError(
-          FlutterTelRecordExceptionExtension.fromValue(error.code),
-          error.message,
-          error.details,
-        ));
-      } else {
-        return Stream.error(error);
-      }
-    });
-    // assert((record && uuid != null) || !record,
-    //     'record is true, uuid must is not null');
+
     return methodChannel
         .invokeMethod<String>('dial', {
           'phone': phone,
@@ -155,6 +136,14 @@ class MethodChannelFlutterTelRecord extends FlutterTelRecordPlatform {
         })
         .asStream()
         .flatMap((value) {
+          final stream = EventChannel('flutter_tel_record/listener_$value')
+              .receiveBroadcastStream()
+              .asBroadcastStream()
+              .flatMap((value) {
+            return Stream.value(Map<String, dynamic>.from(value));
+          }).onErrorResume((error) {
+            return Stream.error(error);
+          });
           return stream;
         })
         .onErrorResume((

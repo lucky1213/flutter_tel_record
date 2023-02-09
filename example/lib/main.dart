@@ -95,18 +95,18 @@ class _MyAppState extends State<MyApp> {
                       // ).then((value) {
                       //   print(value);
                       // });
-                      // FlutterTelRecord.dial(
-                      //   phone: '13280237838',
-                      //   record: true,
-                      //   ignoreCheck: false,
-                      // ).listen((event) {
-                      //   print(event);
-                      // }, onError: (err, stack) {
-                      //   print(err);
-                      // });
-                      FlutterTelRecord.getSIMInfos().then((value) {
-                        print(value);
+                      FlutterTelRecord.dial(
+                        phone: '13280237838',
+                        record: true,
+                        ignoreCheck: false,
+                      ).listen((event) {
+                        print(event);
+                      }, onError: (err, stack) {
+                        print(err);
                       });
+                      // FlutterTelRecord.getSIMInfos().then((value) {
+                      //   print(value);
+                      // });
                     });
                   });
                 },
