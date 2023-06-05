@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
                     [
                       Permission.storage,
                       Permission.phone,
+                      Permission.contacts,
                     ].request().then((value) {
                       if (value[Permission.phone] != PermissionStatus.granted) {
                         return;
@@ -95,12 +96,18 @@ class _MyAppState extends State<MyApp> {
                       // ).then((value) {
                       //   print(value);
                       // });
-                      FlutterTelRecord.dial(
+
+                      StreamSubscription subscription;
+                      subscription = FlutterTelRecord.dial(
                         phone: '13280237838',
                         record: true,
+                        uuid: '300',
+                        fileName: '123_321_13280237838',
                         ignoreCheck: false,
                       ).listen((event) {
+                        debugPrint(event.toString());
                         print(event);
+                        subscription.cancel();
                       }, onError: (err, stack) {
                         print(err);
                       });

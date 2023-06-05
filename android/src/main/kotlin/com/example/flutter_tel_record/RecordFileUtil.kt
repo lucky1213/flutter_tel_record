@@ -7,6 +7,7 @@ import android.os.Environment
 import android.text.TextUtils
 import com.blankj.utilcode.util.LogUtils
 import java.io.File
+import java.lang.Thread.sleep
 import java.nio.file.FileSystemException
 import java.util.*
 
@@ -229,7 +230,7 @@ object  RecordFileUtil {
         if (current < maxCount) {
             file = getFile(context, duration, filename)
             if (file == null) {
-                Thread.sleep(1000)
+                sleep(3000)
                 return getFileSleep(context, current +1, maxCount, duration, filename)
             }
         }

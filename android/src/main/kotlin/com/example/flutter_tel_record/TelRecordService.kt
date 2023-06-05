@@ -12,8 +12,10 @@ import com.blankj.utilcode.util.LogUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import java.io.File
+import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.concurrent.thread
 
 
@@ -169,6 +171,9 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
     }
 
     private fun diffCallLog(): MCallLog? {
+        if (phoneNumber == null) {
+            return null
+        }
         val callLog = getCallLog()
         if (callLog != null) {
             if (callLog.dateLong - time!! > -5 * 1000) {
@@ -176,7 +181,7 @@ class TelRecordService(binding: FlutterPlugin.FlutterPluginBinding) : EventChann
                 return callLog
             }
         }
-        Thread.sleep(1000)
+        sleep(3000)
         return diffCallLog()
     }
 //
